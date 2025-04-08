@@ -12,7 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   return runApp(
       MaterialApp(debugShowCheckedModeBanner: false, home: Welcome()));
