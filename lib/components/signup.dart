@@ -4,6 +4,8 @@ import 'package:ecommerce2/components/pages/bttomnav.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:random_string/random_string.dart';
+import 'package:ecommerce2/service/database.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -30,7 +32,15 @@ class _SignupState extends State<Signup> {
             'Registered successfully',
             style: TextStyle(fontSize: 20),
           )));
-
+      String id = randomAlphaNumeric(10);
+      Map<String, dynamic> userinfoMap = {
+        "name": namecontroller.text,
+        "email": emailcontroller.text,
+        "id": id,
+        'image':
+            " https://www.google.com/search?q=image&oq=image&gs_lcrp=EgZjaHJvbWUqCggAEAAYsQMYgAQyCggAEAAYsQMYgAQyCggBEAAYsQMYgAQyCggCEAAYsQMYgAQyEAgDEAAYgwEYsQMYgAQYigUyBwgEEAAYgAQyDQgFEAAYgwEYsQMYgAQyCggGEAAYsQMYgAQyBggHEEUYPdIBBzk3N2owajeoAgiwAgHxBXF0_TuiMXnX8QVxdP07ojF51w&sourceid=chrome&ie=UTF-8#vhid=2brKLR3s5kTpPM&vssid=_TlsHaITzDqCQ9u8Pu-mz8Qw_67 "
+      };
+      await DatabaseMethods().adduserdetails(userinfoMap, id);
       return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
