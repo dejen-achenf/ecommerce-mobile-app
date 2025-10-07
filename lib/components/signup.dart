@@ -1,7 +1,5 @@
-import 'package:ecommerce2/components/home.dart';
 import 'package:ecommerce2/components/login.dart';
 import 'package:ecommerce2/components/pages/bttomnav.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:random_string/random_string.dart';
@@ -43,28 +41,40 @@ class _SignupState extends State<Signup> {
       await DatabaseMethods().adduserdetails(userinfoMap, id);
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: Text(
-              'Weak password, please use a stronger one',
-              style: TextStyle(fontSize: 20),
-            )));
-      } else if (e.code == 'email-already-in-use') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: Text(
-              'Account already exists',
-              style: TextStyle(fontSize: 20),
-            )));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: Text(
-              'Registration failed: ${e.message}',
-              style: TextStyle(fontSize: 20),
-            )));
+      print('🔥 Registration error code: ${e.code}');
+      print('🔥 Registration error message: ${e.message}');
+      String message;
+      switch (e.code) {
+        case 'weak-password':
+          message = 'Weak password, please use a stronger one';
+          break;
+        case 'email-already-in-use':
+          message = 'Account already exists for this email';
+          break;
+        case 'invalid-email':
+          message = 'Invalid email format';
+          break;
+        case 'operation-not-allowed':
+          message = 'Email/password accounts are disabled in Firebase Auth';
+          break;
+        case 'network-request-failed':
+          message = 'Network error. Check your internet connection';
+          break;
+        default:
+          message =
+              'Registration failed (${e.code}): ${e.message ?? 'Unknown error'}';
       }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.redAccent,
+        content: Text(message, style: TextStyle(fontSize: 18)),
+      ));
+    } catch (e) {
+      print('🔥 Unexpected registration error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Colors.redAccent,
+        content:
+            Text('Registration failed: $e', style: TextStyle(fontSize: 18)),
+      ));
     }
     return null;
   }
@@ -246,8 +256,25 @@ class _SignupState extends State<Signup> {
                           /// does:
                           TextButton(
                         onPressed: () async {
+                          print("Sign up button pressed");
                           if (_Formkey.currentState!.validate()) {
-                            String name = namecontroller.text.trim();
+                            print("Form validated");
+
+                            try {
+                              print("Saved name to SharedPreferences");
+                            } catch (e) {
+                              print("Error saving to SharedPreferences: $e");
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                backgroundColor: Colors.redAccent,
+                                content: Text(
+                                  'Error saving name locally',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ));
+                              return; // stop further processing
+                            }
+
                             String email = emailcontroller.text.trim();
                             String password = passwordcontroller.text;
 

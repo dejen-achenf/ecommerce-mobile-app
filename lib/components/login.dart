@@ -1,7 +1,6 @@
 import 'package:ecommerce2/components/pages/bttomnav.dart';
 import 'package:ecommerce2/components/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
